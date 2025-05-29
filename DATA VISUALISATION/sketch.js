@@ -9,43 +9,44 @@ let countries = [
   { name: "Canada", emissions: 570 }
 ];
 
+let totalEmissions;
 let maxEmission;
-let baseRadii = [];
 
 function setup() {
   createCanvas(windowWidth, 600);
   textFont('Arial');
   textAlign(CENTER, CENTER);
   colorMode(HSB, 360, 100, 100);
+  totalEmissions = countries.reduce((sum, c) => sum + c.emissions, 0);
   maxEmission = max(countries.map(c => c.emissions));
-
-  for (let i = 0; i < countries.length; i++) {
-    baseRadii[i] = map(countries[i].emissions, 0, maxEmission, 30, 120);
-  }
+  noLoop();
 }
 
 function draw() {
-  background(220);
+  background(230);
 
   fill(0);
   textSize(24);
-  text("Pulsating Circles: CO₂ Emissions by Country (2022)", width / 2, 40);
+  text("CO₂ Emissions by Country (2022)", width / 2, 40);
 
+  let chartHeight = 400;
+  let barWidth = 50;
   let spacing = width / (countries.length + 1);
 
   for (let i = 0; i < countries.length; i++) {
     let x = spacing * (i + 1);
-    let y = height / 2;
+    let h = map(countries[i].emissions, 0, maxEmission, 0, chartHeight);
+    let y = height - 100 - h;
 
-    // Pulsate radius with sine wave
-    let pulse = sin(frameCount * 0.05 + i) * 15;
-    let r = baseRadii[i] + pulse;
+    let percent = (countries[i].emissions / totalEmissions) * 100;
 
     fill(map(i, 0, countries.length, 0, 360), 80, 80);
-    ellipse(x, y, r * 2);
+    rect(x - barWidth / 2, y, barWidth, h);
 
     fill(0);
-    textSize(14);
-    text(countries[i].name, x, y + r + 20);
+    textSize(12);
+    text(countries[i].name, x, height - 80);
+    text(`${countries[i].emissions} Mt`, x, height - 60);
+    text(`${percent.toFixed(1)}%`, x, height - 40);
   }
 }
