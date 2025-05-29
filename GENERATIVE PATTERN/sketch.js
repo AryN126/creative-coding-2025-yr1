@@ -1,31 +1,68 @@
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(windowWidth, windowHeight);
+  noLoop();
   noStroke();
-  colorMode(HSL, 360, 100, 100, 1);
-  frameRate(30);
+  drawPattern();
 }
 
-function draw() {
-  background(0, 0, 95);
+function draw() {}
 
-  let gridSize = 20;
-  let spacing = width / gridSize;
+function drawPattern() {
+  background("#D6D7D3");
 
-  for (let x = 0; x < gridSize; x++) {
-    for (let y = 0; y < gridSize; y++) {
-      let px = x * spacing + spacing / 2;
-      let py = y * spacing + spacing / 2;
+  let cols = 10;
+  let rows = 10;
+  let w = width / cols;
+  let h = height / rows * 0.5;
 
-      let baseHue = (frameCount * 2 + x * 15 + y * 10) % 360;
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      let x = i * w;
+      let y = j * h * 2;
 
-      let size = map(sin(frameCount * 0.1 + x + y), -1, 1, spacing * 0.3, spacing * 0.8);
-      size *= random(0.8, 1.2);
-
-      let saturation = map(sin(frameCount * 0.05 + x * 0.3), -1, 1, 50, 90);
-      let brightness = map(cos(frameCount * 0.05 + y * 0.3), -1, 1, 60, 90);
-
-      fill(baseHue, saturation, brightness, 0.8);
-      ellipse(px, py, size);
+      drawCube(x + w / 2, y + h / 2, w * 0.8, h * 0.8);
     }
   }
+}
+
+function drawCube(cx, cy, w, h) {
+  let hw = w / 2;
+  let hh = h / 2;
+
+  let topColor = color(random(150, 255), random(150, 255), random(150, 255));
+  let leftColor = lerpColor(topColor, color(0), 0.2);
+  let rightColor = lerpColor(topColor, color(0), 0.4);
+
+  fill(topColor);
+  quad(
+    cx, cy - hh,
+    cx + hw, cy,
+    cx, cy + hh,
+    cx - hw, cy
+  );
+
+  fill(leftColor);
+  quad(
+    cx - hw, cy,
+    cx, cy + hh,
+    cx, cy + hh * 2,
+    cx - hw, cy + hh
+  );
+
+  fill(rightColor);
+  quad(
+    cx + hw, cy,
+    cx, cy + hh,
+    cx, cy + hh * 2,
+    cx + hw, cy + hh
+  );
+}
+
+function mousePressed() {
+  drawPattern();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  drawPattern();
 }
